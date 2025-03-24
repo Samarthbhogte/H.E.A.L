@@ -105,3 +105,14 @@ CREATE TABLE Prescription (
     Dosage VARCHAR2(50) NOT NULL,
     CONSTRAINT FK_Prescription_Treatment FOREIGN KEY (TreatmentID) REFERENCES TreatmentHistory(TreatmentID)
 );
+
+-- Billing Table
+CREATE TABLE Billing (
+    BillID VARCHAR2(50) PRIMARY KEY,
+    PatientID VARCHAR2(50) NOT NULL,
+    VisitID VARCHAR2(50) NOT NULL,
+    TotalAmount NUMBER(10,2) CHECK (TotalAmount >= 0) NOT NULL,
+    PaymentStatus VARCHAR2(50) CHECK (PaymentStatus IN ('Paid', 'Pending', 'Failed')) NOT NULL,
+    CONSTRAINT FK_Billing_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID),
+    CONSTRAINT FK_Billing_Visit FOREIGN KEY (VisitID) REFERENCES Visit(VisitID)
+);

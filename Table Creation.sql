@@ -26,8 +26,7 @@ CREATE TABLE Users (
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_Users_Role FOREIGN KEY (RoleID) REFERENCES UserRoles(RoleID)
-<<<<<<< Updated upstream
-=======
+
 );
 
 -- Doctor Table
@@ -66,3 +65,4 @@ CREATE TABLE Appointment (
     AppointmentStatus VARCHAR2(50) CHECK (AppointmentStatus IN ('Scheduled', 'Completed', 'Canceled')),
     CONSTRAINT FK_Appointment_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
 );
+

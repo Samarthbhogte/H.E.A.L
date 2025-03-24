@@ -7,3 +7,18 @@ INSERT INTO UserRoles VALUES ('R001', 'Admin');
 INSERT INTO UserRoles VALUES ('R002', 'Doctor');
 INSERT INTO UserRoles VALUES ('R003', 'BillingStaff');
 
+-- Insert Data for Users
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U001', 'admin_user', 'hashed_password', 'R001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U002', 'doctor_smith', 'hashed_password', 'R002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U003', 'billing_staff', 'hashed_password', 'R003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U004', 'doctor_jane', 'hashed_password', 'R002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U005', 'billing_mary', 'hashed_password', 'R003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

@@ -22,3 +22,19 @@ VALUES ('U004', 'doctor_jane', 'hashed_password', 'R002', CURRENT_TIMESTAMP, CUR
 
 INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
 VALUES ('U005', 'billing_mary', 'hashed_password', 'R003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Add Users for Patients & New Doctor
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U006', 'bob_miller', 'hashed_password', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U007', 'emma_wilson', 'hashed_password', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U008', 'michael_johnson', 'hashed_password', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U009', 'sophia_lee', 'hashed_password', NULL, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
+VALUES ('U010', 'robert_brown', 'hashed_password', 'R002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

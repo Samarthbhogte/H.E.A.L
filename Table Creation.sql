@@ -65,5 +65,4 @@ CREATE TABLE Appointment (
     AppointmentDate DATE NOT NULL,
     AppointmentStatus VARCHAR2(50) CHECK (AppointmentStatus IN ('Scheduled', 'Completed', 'Canceled')),
     CONSTRAINT FK_Appointment_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
->>>>>>> Stashed changes
 );

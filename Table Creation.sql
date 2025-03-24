@@ -16,3 +16,13 @@ CREATE TABLE UserRoles (
     RoleName VARCHAR2(50) CHECK (RoleName IN ('Admin', 'Doctor', 'BillingStaff'))
 );
 
+-- Users Table
+CREATE TABLE Users (
+    UserID VARCHAR2(50) PRIMARY KEY,
+    Username VARCHAR2(50) UNIQUE NOT NULL,
+    PasswordHash VARCHAR2(256) NOT NULL,
+    RoleID VARCHAR2(50),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT FK_Users_Role FOREIGN KEY (RoleID) REFERENCES UserRoles(RoleID)
+);

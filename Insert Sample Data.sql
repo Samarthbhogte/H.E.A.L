@@ -69,3 +69,10 @@ INSERT INTO Visit VALUES ('V002', 'P002', 'D002', TO_DATE('2024-03-21', 'YYYY-MM
 INSERT INTO Visit VALUES ('V003', 'P003', 'D003', TO_DATE('2024-03-22', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'Neurology Consultation', 'A003', 'Pending'); 
 INSERT INTO Visit VALUES ('V004', 'P004', 'D001', TO_DATE('2024-03-23', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'Follow-up', 'A004', 'Pending');
 INSERT INTO Visit VALUES ('V005', 'P005', 'D002', TO_DATE('2024-03-24', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'General Consultation', 'A005', 'Pending');
+
+-- Insert Data for Billing 
+INSERT INTO Billing VALUES ('B001', 'P001', 'V001', 250.00, 'Pending');
+INSERT INTO Billing VALUES ('B002', 'P002', 'V002', 180.00, 'Paid');
+INSERT INTO Billing VALUES ('B003', 'P003', 'V003', 300.00, 'Pending'); 
+INSERT INTO Billing VALUES ('B004', 'P004', 'V004', 150.00, 'Pending');
+INSERT INTO Billing VALUES ('B005', 'P005', 'V005', 200.00, 'Pending');

@@ -87,3 +87,12 @@ CREATE TABLE MedicalRecord (
     RecordDate DATE NOT NULL,
     CONSTRAINT FK_MedicalRecord_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID)
 );
+
+-- TreatmentHistory Table
+CREATE TABLE TreatmentHistory (
+    TreatmentID VARCHAR2(50) PRIMARY KEY,
+    VisitID VARCHAR2(50) NOT NULL,
+    Description VARCHAR2(500) NOT NULL,
+    TreatmentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT FK_TreatmentHistory_Visit FOREIGN KEY (VisitID) REFERENCES Visit(VisitID)
+);

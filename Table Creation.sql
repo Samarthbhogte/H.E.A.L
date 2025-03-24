@@ -26,4 +26,44 @@ CREATE TABLE Users (
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_Users_Role FOREIGN KEY (RoleID) REFERENCES UserRoles(RoleID)
+<<<<<<< Updated upstream
+=======
+);
+
+-- Doctor Table
+CREATE TABLE Doctor (
+    DoctorID VARCHAR2(50) PRIMARY KEY,
+    UserID VARCHAR2(50) UNIQUE NOT NULL,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    Specialization VARCHAR2(50) NOT NULL,
+    LicenseNumber VARCHAR2(50) UNIQUE NOT NULL,
+    YearsOfExperience NUMBER(3,1) CHECK (YearsOfExperience >= 0),
+    Availability VARCHAR2(50) NOT NULL,
+    CONSTRAINT FK_Doctor_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Patient Table
+CREATE TABLE Patient (
+    PatientID VARCHAR2(50) PRIMARY KEY,
+    UserID VARCHAR2(50) UNIQUE NOT NULL,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    DOB DATE NOT NULL,
+    Gender VARCHAR2(10) CHECK (Gender IN ('Male', 'Female', 'Other')),
+    Email VARCHAR2(100) UNIQUE NOT NULL,
+    PhoneNumber VARCHAR2(20) NOT NULL,
+    EmergencyContact VARCHAR2(100) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT FK_Patient_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+-- Appointment Table
+CREATE TABLE Appointment (
+    AppointmentID VARCHAR2(50) PRIMARY KEY,
+    DoctorID VARCHAR2(50) NOT NULL,
+    AppointmentDate DATE NOT NULL,
+    AppointmentStatus VARCHAR2(50) CHECK (AppointmentStatus IN ('Scheduled', 'Completed', 'Canceled')),
+    CONSTRAINT FK_Appointment_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
+>>>>>>> Stashed changes
 );

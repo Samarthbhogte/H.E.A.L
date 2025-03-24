@@ -38,3 +38,8 @@ VALUES ('U009', 'sophia_lee', 'hashed_password', NULL, CURRENT_TIMESTAMP, CURREN
 
 INSERT INTO Users (UserID, Username, PasswordHash, RoleID, CreatedAt, UpdatedAt) 
 VALUES ('U010', 'robert_brown', 'hashed_password', 'R002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- Insert Data for Doctors
+INSERT INTO Doctor VALUES ('D001', 'U002', 'John', 'Smith', 'Cardiology', 'DOC12345', 10, 'Available');
+INSERT INTO Doctor VALUES ('D002', 'U004', 'Jane', 'Doe', 'Pediatrics', 'DOC67890', 8, 'Available');
+INSERT INTO Doctor VALUES ('D003', 'U010', 'Robert', 'Brown', 'Neurology', 'DOC78901', 15, 'Available');

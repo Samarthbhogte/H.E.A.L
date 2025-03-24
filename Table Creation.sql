@@ -63,3 +63,18 @@ CREATE TABLE Appointment (
     AppointmentStatus VARCHAR2(50) CHECK (AppointmentStatus IN ('Scheduled', 'Completed', 'Canceled')),
     CONSTRAINT FK_Appointment_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
 );
+
+-- Visit Table
+CREATE TABLE Visit (
+    VisitID VARCHAR2(50) PRIMARY KEY,
+    PatientID VARCHAR2(50) NOT NULL,
+    DoctorID VARCHAR2(50) NOT NULL,
+    VisitDate DATE NOT NULL,
+    VisitTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    VisitReason VARCHAR2(500) NOT NULL,
+    AppointmentID VARCHAR2(50) UNIQUE,
+    VisitStatus VARCHAR2(50) CHECK (VisitStatus IN ('Pending', 'Completed', 'Canceled')),
+    CONSTRAINT FK_Visit_Appointment FOREIGN KEY (AppointmentID) REFERENCES Appointment(AppointmentID),
+    CONSTRAINT FK_Visit_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID),
+    CONSTRAINT FK_Visit_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID)
+);

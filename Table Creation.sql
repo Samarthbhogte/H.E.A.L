@@ -96,3 +96,12 @@ CREATE TABLE TreatmentHistory (
     TreatmentDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_TreatmentHistory_Visit FOREIGN KEY (VisitID) REFERENCES Visit(VisitID)
 );
+
+-- Prescription Table
+CREATE TABLE Prescription (
+    PrescriptionID VARCHAR2(50) PRIMARY KEY,
+    TreatmentID VARCHAR2(50) NOT NULL,
+    Medication VARCHAR2(100) NOT NULL,
+    Dosage VARCHAR2(50) NOT NULL,
+    CONSTRAINT FK_Prescription_Treatment FOREIGN KEY (TreatmentID) REFERENCES TreatmentHistory(TreatmentID)
+);

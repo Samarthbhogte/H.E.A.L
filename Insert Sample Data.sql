@@ -61,3 +61,11 @@ INSERT INTO Appointment VALUES ('A002', 'D002', TO_DATE('2024-03-21', 'YYYY-MM-D
 INSERT INTO Appointment VALUES ('A003', 'D003', TO_DATE('2024-03-22', 'YYYY-MM-DD'), 'Scheduled'); 
 INSERT INTO Appointment VALUES ('A004', 'D001', TO_DATE('2024-03-23', 'YYYY-MM-DD'), 'Scheduled');
 INSERT INTO Appointment VALUES ('A005', 'D002', TO_DATE('2024-03-24', 'YYYY-MM-DD'), 'Scheduled');
+
+
+-- Insert Data for Visits 
+INSERT INTO Visit VALUES ('V001', 'P001', 'D001', TO_DATE('2024-03-20', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'Regular Checkup', 'A001', 'Pending');
+INSERT INTO Visit VALUES ('V002', 'P002', 'D002', TO_DATE('2024-03-21', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'Annual Checkup', 'A002', 'Completed');
+INSERT INTO Visit VALUES ('V003', 'P003', 'D003', TO_DATE('2024-03-22', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'Neurology Consultation', 'A003', 'Pending'); 
+INSERT INTO Visit VALUES ('V004', 'P004', 'D001', TO_DATE('2024-03-23', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'Follow-up', 'A004', 'Pending');
+INSERT INTO Visit VALUES ('V005', 'P005', 'D002', TO_DATE('2024-03-24', 'YYYY-MM-DD'), CURRENT_TIMESTAMP, 'General Consultation', 'A005', 'Pending');

@@ -27,3 +27,16 @@ CREATE TABLE Users (
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_Users_Role FOREIGN KEY (RoleID) REFERENCES UserRoles(RoleID)
 );
+
+-- Doctor Table
+CREATE TABLE Doctor (
+    DoctorID VARCHAR2(50) PRIMARY KEY,
+    UserID VARCHAR2(50) UNIQUE NOT NULL,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    Specialization VARCHAR2(50) NOT NULL,
+    LicenseNumber VARCHAR2(50) UNIQUE NOT NULL,
+    YearsOfExperience NUMBER(3,1) CHECK (YearsOfExperience >= 0),
+    Availability VARCHAR2(50) NOT NULL,
+    CONSTRAINT FK_Doctor_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);

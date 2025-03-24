@@ -26,6 +26,7 @@ CREATE TABLE Users (
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_Users_Role FOREIGN KEY (RoleID) REFERENCES UserRoles(RoleID)
+
 );
 
 -- Doctor Table
@@ -55,3 +56,13 @@ CREATE TABLE Patient (
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT FK_Patient_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
+
+-- Appointment Table
+CREATE TABLE Appointment (
+    AppointmentID VARCHAR2(50) PRIMARY KEY,
+    DoctorID VARCHAR2(50) NOT NULL,
+    AppointmentDate DATE NOT NULL,
+    AppointmentStatus VARCHAR2(50) CHECK (AppointmentStatus IN ('Scheduled', 'Completed', 'Canceled')),
+    CONSTRAINT FK_Appointment_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID)
+);
+

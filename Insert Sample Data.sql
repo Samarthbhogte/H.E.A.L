@@ -54,3 +54,10 @@ INSERT INTO Patient VALUES ('P003', 'U007', 'Emma', 'Wilson', TO_DATE('1995-08-2
 INSERT INTO Patient VALUES ('P004', 'U008', 'Michael', 'Johnson', TO_DATE('1982-07-03', 'YYYY-MM-DD'), 'Male', 'michael@example.com', '4567891230', 'Brother Contact', CURRENT_TIMESTAMP);
 
 INSERT INTO Patient VALUES ('P005', 'U009', 'Sophia', 'Lee', TO_DATE('1998-12-15', 'YYYY-MM-DD'), 'Female', 'sophia@example.com', '8529637410', 'Father Contact', CURRENT_TIMESTAMP);
+
+-- Insert Data for Appointments 
+INSERT INTO Appointment VALUES ('A001', 'D001', TO_DATE('2024-03-20', 'YYYY-MM-DD'), 'Scheduled');
+INSERT INTO Appointment VALUES ('A002', 'D002', TO_DATE('2024-03-21', 'YYYY-MM-DD'), 'Completed');
+INSERT INTO Appointment VALUES ('A003', 'D003', TO_DATE('2024-03-22', 'YYYY-MM-DD'), 'Scheduled'); 
+INSERT INTO Appointment VALUES ('A004', 'D001', TO_DATE('2024-03-23', 'YYYY-MM-DD'), 'Scheduled');
+INSERT INTO Appointment VALUES ('A005', 'D002', TO_DATE('2024-03-24', 'YYYY-MM-DD'), 'Scheduled');

@@ -78,3 +78,12 @@ CREATE TABLE Visit (
     CONSTRAINT FK_Visit_Doctor FOREIGN KEY (DoctorID) REFERENCES Doctor(DoctorID),
     CONSTRAINT FK_Visit_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID)
 );
+
+-- MedicalRecord Table
+CREATE TABLE MedicalRecord (
+    RecordID VARCHAR2(50) PRIMARY KEY,
+    PatientID VARCHAR2(50) NOT NULL,
+    ChronicConditions VARCHAR2(500),
+    RecordDate DATE NOT NULL,
+    CONSTRAINT FK_MedicalRecord_Patient FOREIGN KEY (PatientID) REFERENCES Patient(PatientID)
+);

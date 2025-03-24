@@ -39,3 +39,18 @@ CREATE TABLE Doctor (
     Availability VARCHAR2(50) NOT NULL,
     CONSTRAINT FK_Doctor_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
+
+-- Patient Table
+CREATE TABLE Patient (
+    PatientID VARCHAR2(50) PRIMARY KEY,
+    UserID VARCHAR2(50) UNIQUE NOT NULL,
+    FirstName VARCHAR2(50) NOT NULL,
+    LastName VARCHAR2(50) NOT NULL,
+    DOB DATE NOT NULL,
+    Gender VARCHAR2(10) CHECK (Gender IN ('Male', 'Female', 'Other')),
+    Email VARCHAR2(100) UNIQUE NOT NULL,
+    PhoneNumber VARCHAR2(20) NOT NULL,
+    EmergencyContact VARCHAR2(100) NOT NULL,
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT FK_Patient_User FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);

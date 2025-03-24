@@ -43,3 +43,14 @@ VALUES ('U010', 'robert_brown', 'hashed_password', 'R002', CURRENT_TIMESTAMP, CU
 INSERT INTO Doctor VALUES ('D001', 'U002', 'John', 'Smith', 'Cardiology', 'DOC12345', 10, 'Available');
 INSERT INTO Doctor VALUES ('D002', 'U004', 'Jane', 'Doe', 'Pediatrics', 'DOC67890', 8, 'Available');
 INSERT INTO Doctor VALUES ('D003', 'U010', 'Robert', 'Brown', 'Neurology', 'DOC78901', 15, 'Available');
+
+-- Insert Data for Patients
+INSERT INTO Patient VALUES ('P001', 'U003', 'Alice', 'Johnson', TO_DATE('1990-05-10', 'YYYY-MM-DD'), 'Female', 'alice@example.com', '1234567890', 'Emergency Contact', CURRENT_TIMESTAMP);
+
+INSERT INTO Patient VALUES ('P002', 'U006', 'Bob', 'Miller', TO_DATE('1985-02-14', 'YYYY-MM-DD'), 'Male', 'bob@example.com', '9876543210', 'Spouse Contact', CURRENT_TIMESTAMP);
+
+INSERT INTO Patient VALUES ('P003', 'U007', 'Emma', 'Wilson', TO_DATE('1995-08-21', 'YYYY-MM-DD'), 'Female', 'emma@example.com', '7894561230', 'Mother Contact', CURRENT_TIMESTAMP);
+
+INSERT INTO Patient VALUES ('P004', 'U008', 'Michael', 'Johnson', TO_DATE('1982-07-03', 'YYYY-MM-DD'), 'Male', 'michael@example.com', '4567891230', 'Brother Contact', CURRENT_TIMESTAMP);
+
+INSERT INTO Patient VALUES ('P005', 'U009', 'Sophia', 'Lee', TO_DATE('1998-12-15', 'YYYY-MM-DD'), 'Female', 'sophia@example.com', '8529637410', 'Father Contact', CURRENT_TIMESTAMP);

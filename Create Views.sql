@@ -87,6 +87,29 @@ EXCEPTION
 END;
 /
 
+-- SECTION D: Constraint Testing
+-- ---------------------------
+
+-- Test Case: Insert duplicate email in Patient (Should fail)
+BEGIN
+    INSERT INTO Patient (PatientID, UserID, FirstName, LastName, DOB, Gender, Email, PhoneNumber, EmergencyContact, CreatedAt)
+    VALUES ('P999', 'U001', 'Test', 'Duplicate', SYSDATE, 'Male', 'alice@example.com', '1231231234', 'Test Contact', SYSDATE);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Duplicate email not allowed – ' || SQLERRM);
+END;
+/
+
+-- Test Case: Appointment in the past (Should fail business logic)
+BEGIN
+    INSERT INTO Appointment (AppointmentID, DoctorID, AppointmentDate, AppointmentStatus)
+    VALUES ('A999', 'D001', TO_DATE('2023-01-01','YYYY-MM-DD'), 'Scheduled');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Cannot schedule appointment in the past – ' || SQLERRM);
+END;
+/
+
 -- SECTION E: Additional Procedures
 -- ---------------------------
 
@@ -103,5 +126,16 @@ BEGIN
     UPDATE Visit
     SET VisitStatus = p_status
     WHERE VisitID = p_visit_id;
+END;
+/
+
+-- Procedure: Complete Payment
+CREATE OR REPLACE PROCEDURE Complete_Payment (
+    p_bill_id VARCHAR2
+) AS
+BEGIN
+    UPDATE Billing
+    SET PaymentStatus = 'Paid'
+    WHERE BillID = p_bill_id;
 END;
 /

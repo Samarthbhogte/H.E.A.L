@@ -25,3 +25,24 @@ FROM Billing B
 JOIN Visit V ON B.VisitID = V.VisitID
 JOIN Patient P ON B.PatientID = P.PatientID;
 
+-- SECTION B: Role-Specific Views
+-- ---------------------------
+
+-- View: Doctor-Only Patient Visit Summary
+CREATE OR REPLACE VIEW Doctor_Only_Patient_Summary AS
+SELECT V.VisitID, P.FirstName || ' ' || P.LastName AS PatientName,
+       V.VisitDate, V.VisitReason, V.VisitStatus
+FROM Visit V
+JOIN Patient P ON V.PatientID = P.PatientID
+WHERE V.DoctorID = (SELECT DoctorID FROM Doctor WHERE UserID =
+                    (SELECT UserID FROM Users WHERE Username = SYS_CONTEXT('USERENV','SESSION_USER')));
+
+-- View: Billing-Only Insights
+CREATE OR REPLACE VIEW Billing_Only_View AS
+SELECT B.BillID, P.FirstName || ' ' || P.LastName AS PatientName,
+       V.VisitDate, B.TotalAmount, B.PaymentStatus
+FROM Billing B
+JOIN Visit V ON B.VisitID = V.VisitID
+JOIN Patient P ON B.PatientID = P.PatientID;
+
+

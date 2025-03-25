@@ -86,3 +86,22 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Doctor cannot delete users – ' || SQLERRM);
 END;
 /
+
+-- SECTION E: Additional Procedures
+-- ---------------------------
+
+-- Procedure: Update Visit Status
+CREATE OR REPLACE PROCEDURE Update_Visit_Status (
+    p_visit_id VARCHAR2,
+    p_status   VARCHAR2
+) AS
+BEGIN
+    IF p_status NOT IN ('Pending', 'Completed', 'Canceled') THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Invalid visit status.');
+    END IF;
+
+    UPDATE Visit
+    SET VisitStatus = p_status
+    WHERE VisitID = p_visit_id;
+END;
+/

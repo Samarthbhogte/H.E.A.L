@@ -45,4 +45,44 @@ FROM Billing B
 JOIN Visit V ON B.VisitID = V.VisitID
 JOIN Patient P ON B.PatientID = P.PatientID;
 
+-- SECTION C: Test Cases for Role Enforcement
+-- ---------------------------
 
+-- Test Case: Doctor tries to update Billing (Should fail)
+BEGIN
+    UPDATE Billing SET TotalAmount = 999.99 WHERE BillID = 'B001';
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Doctor cannot update billing – ' || SQLERRM);
+END;
+/
+
+-- Test Case: Billing Staff tries to SELECT from MedicalRecord (Should fail)
+BEGIN
+    FOR rec IN (SELECT * FROM MedicalRecord) LOOP
+        NULL;
+    END LOOP;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Billing staff not allowed to view medical records – ' || SQLERRM);
+END;
+/
+
+-- Test Case: Patient tries to insert Visit (Should fail)
+BEGIN
+    INSERT INTO Visit (VisitID, PatientID, DoctorID, VisitDate, VisitReason, VisitStatus)
+    VALUES ('V999', 'P001', 'D001', SYSDATE, 'Unauthorized Visit', 'Pending');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Unauthorized insert into Visit table – ' || SQLERRM);
+END;
+/
+
+-- Test Case: Doctor tries to delete a user (Should fail)
+BEGIN
+    DELETE FROM Users WHERE Username = 'admin_user';
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE(' ERROR CAUGHT: Doctor cannot delete users – ' || SQLERRM);
+END;
+/

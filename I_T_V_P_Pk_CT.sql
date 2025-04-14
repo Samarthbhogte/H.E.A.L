@@ -32,4 +32,47 @@ CREATE INDEX ADMIN_USER.idx_patient_email_phone
 CREATE INDEX ADMIN_USER.idx_medicalrecord_patient
   ON ADMIN_USER.MedicalRecord(PatientID);
 
+  ----------------------------------------------------------
+--    TRIGGERS
+----------------------------------------------------------
+-- This trigger checks, before any INSERT or UPDATE on the Appointment table, whether the new AppointmentDate is earlier than today (using TRUNC(SYSDATE) to ignore the time component)
+
+CREATE OR REPLACE TRIGGER ADMIN_USER.trg_appointment_date_check
+BEFORE INSERT OR UPDATE ON ADMIN_USER.Appointment
+FOR EACH ROW
+BEGIN
+    IF :NEW.AppointmentDate < TRUNC(SYSDATE) THEN
+       RAISE_APPLICATION_ERROR(-20001, 'Cannot schedule appointment in the past.');
+    END IF;
+END;
+/
+
+-- Auto-update the "UpdatedAt" Column on the Users Table
+
+CREATE OR REPLACE TRIGGER ADMIN_USER.trg_update_user_timestamp
+BEFORE UPDATE ON ADMIN_USER.Users
+FOR EACH ROW
+BEGIN
+    :NEW.UpdatedAt := SYSDATE;
+END;
+/
+
+--Prevent Deletion of Doctors if They Have Associated Appointments
+CREATE OR REPLACE TRIGGER ADMIN_USER.trg_prevent_doctor_delete
+BEFORE DELETE ON ADMIN_USER.Doctor
+FOR EACH ROW
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count
+      FROM ADMIN_USER.Appointment
+     WHERE DoctorID = :OLD.DoctorID;
+    
+    IF v_count > 0 THEN
+       RAISE_APPLICATION_ERROR(-20002, 'Cannot delete doctor: appointments exist.');
+    END IF;
+END;
+/
+
+
 

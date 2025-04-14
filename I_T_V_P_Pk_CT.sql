@@ -302,3 +302,47 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Doctor_Only_Patient_Summary to BILL_USER: ' || SQLERRM);
 END;
 /
+------------------------------------------------------------------------
+-- 5) CREATE OR REPLACE VIEW: Billing_Only_View
+--    Allowed: BILL_USER only (and optionally ADMIN_USER).
+------------------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE '
+        CREATE OR REPLACE VIEW ADMIN_USER.Billing_Only_View AS
+        SELECT 
+            TO_CHAR(B.BillID) AS BillID,
+            P.FirstName || '' '' || P.LastName AS PatientName,
+            TO_CHAR(V.VisitDate, ''YYYY-MM-DD'') AS VisitDate,
+            TO_CHAR(B.TotalAmount) AS TotalAmount,
+            B.PaymentStatus
+        FROM ADMIN_USER.Billing B
+             JOIN ADMIN_USER.Visit V   ON B.VisitID = V.VisitID
+             JOIN ADMIN_USER.Patient P ON B.PatientID = P.PatientID
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) IN (''BILL_USER'', ''ADMIN_USER'')
+
+        UNION ALL
+
+        SELECT
+            ''Access Denied''  AS BillID,
+            ''Access Denied''  AS PatientName,
+            ''Access Denied''  AS VisitDate,
+            ''Access Denied''  AS TotalAmount,
+            ''Access Denied''  AS PaymentStatus
+        FROM DUAL
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) NOT IN (''BILL_USER'', ''ADMIN_USER'')
+    ';
+    DBMS_OUTPUT.PUT_LINE('View ADMIN_USER.Billing_Only_View created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating ADMIN_USER.Billing_Only_View: ' || SQLERRM);
+END;
+/
+-- Grant SELECT on Billing_Only_View to BILL_USER (already granted previously in your code)
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Billing_Only_View TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Billing_Only_View to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Billing_Only_View to BILL_USER: ' || SQLERRM);
+END;
+/

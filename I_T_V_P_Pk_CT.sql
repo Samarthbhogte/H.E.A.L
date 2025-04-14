@@ -143,6 +143,8 @@ EXCEPTION
 END;
 /
 
+
+
 ------------------------------------------------------------------------
 -- 2) CREATE OR REPLACE VIEW: Patient_Visit_Summary
 --    Allowed: ADMIN_USER, BILL_USER
@@ -248,6 +250,8 @@ EXCEPTION
 END;
 /
 
+
+
 ------------------------------------------------------------------------
 -- 4) CREATE OR REPLACE VIEW: Doctor_Only_Patient_Summary
 --    Allowed: DOC_USER only (and optionally ADMIN_USER)
@@ -302,6 +306,9 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Doctor_Only_Patient_Summary to BILL_USER: ' || SQLERRM);
 END;
 /
+
+
+
 ------------------------------------------------------------------------
 -- 5) CREATE OR REPLACE VIEW: Billing_Only_View
 --    Allowed: BILL_USER only (and optionally ADMIN_USER).
@@ -347,6 +354,8 @@ EXCEPTION
 END;
 /
 
+
+
 ------------------------------------------------------------
 -- [UNDERLYING TABLE PRIVILEGES SECTION]
 ------------------------------------------------------------
@@ -388,5 +397,51 @@ BEGIN
 EXCEPTION
     WHEN OTHERS THEN
         DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Visit to BILL_USER: ' || SQLERRM);
+END;
+/
+
+
+
+------------------------------------------------------------
+-- CREATE PUBLIC SYNONYMS FOR THE VIEWS
+------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE PUBLIC SYNONYM Doctor_Availability FOR ADMIN_USER.Doctor_Availability';
+    DBMS_OUTPUT.PUT_LINE('Public synonym Doctor_Availability created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Doctor_Availability: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE PUBLIC SYNONYM Patient_Visit_Summary FOR ADMIN_USER.Patient_Visit_Summary';
+    DBMS_OUTPUT.PUT_LINE('Public synonym Patient_Visit_Summary created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Patient_Visit_Summary: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE PUBLIC SYNONYM Billing_Insights FOR ADMIN_USER.Billing_Insights';
+    DBMS_OUTPUT.PUT_LINE('Public synonym Billing_Insights created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Billing_Insights: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE PUBLIC SYNONYM Doctor_Only_Patient_Summary FOR ADMIN_USER.Doctor_Only_Patient_Summary';
+    DBMS_OUTPUT.PUT_LINE('Public synonym Doctor_Only_Patient_Summary created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Doctor_Only_Patient_Summary: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE OR REPLACE PUBLIC SYNONYM Billing_Only_View FOR ADMIN_USER.Billing_Only_View';
+    DBMS_OUTPUT.PUT_LINE('Public synonym Billing_Only_View created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Billing_Only_View: ' || SQLERRM);
 END;
 /

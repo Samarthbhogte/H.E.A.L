@@ -112,3 +112,72 @@ END;
 
 ALTER USER admin_user QUOTA UNLIMITED ON DATA;
 GRANT CREATE PUBLIC SYNONYM TO ADMIN_USER;
+
+-------------------------------------------------------------
+-- SECTION 5: Grant Privileges to DOC_USER (Doctor Role)
+-------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted CREATE SESSION to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting CREATE SESSION to DOC_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON ADMIN_USER.Patient TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted DML privileges on Patient to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting privileges on Patient to DOC_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON ADMIN_USER.Appointment TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted DML privileges on Appointment to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting privileges on Appointment to DOC_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON ADMIN_USER.MedicalRecord TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted DML privileges on MedicalRecord to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting privileges on MedicalRecord to DOC_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Doctor TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Doctor to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Doctor to DOC_USER: ' || SQLERRM);
+END;
+/
+
+-------------------------------------------------------------
+-- SECTION 6: Grant Privileges to BILL_USER (Billing Role)
+-------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted CREATE SESSION to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting CREATE SESSION to BILL_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT, INSERT, UPDATE ON ADMIN_USER.Billing TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted DML privileges on Billing to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting privileges on Billing to BILL_USER: ' || SQLERRM);
+END;
+/

@@ -402,6 +402,7 @@ END;
 
 
 
+
 ------------------------------------------------------------
 -- CREATE PUBLIC SYNONYMS FOR THE VIEWS
 ------------------------------------------------------------
@@ -586,5 +587,77 @@ END;
 BEGIN
     Record_Treatment('V001', 'Administered flu vaccine');
 END;
+/
+
+
+
+
+-----------------------------------------------------------------------
+--       PACKAGE :- [healthcare_pkg]
+-----------------------------------------------------------------------
+
+
+
+-- Package Specification (Header):
+
+CREATE OR REPLACE PACKAGE ADMIN_USER.healthcare_pkg IS
+    PROCEDURE Update_Visit_Status(p_visit_id IN VARCHAR2, p_status IN VARCHAR2);
+    PROCEDURE Complete_Payment(p_bill_id IN VARCHAR2);
+    PROCEDURE Record_Treatment(p_visit_id IN VARCHAR2, p_description IN VARCHAR2);
+END healthcare_pkg;
+/
+
+
+--Package Body:
+
+
+CREATE OR REPLACE PACKAGE BODY ADMIN_USER.healthcare_pkg IS
+
+    PROCEDURE Update_Visit_Status(p_visit_id IN VARCHAR2, p_status IN VARCHAR2) IS
+    BEGIN
+        -- Validate the status value
+        IF p_status NOT IN ('Pending', 'Completed', 'Canceled') THEN
+            RAISE_APPLICATION_ERROR(-20003, 'Invalid visit status. Must be Pending, Completed, or Canceled.');
+        END IF;
+        
+        UPDATE ADMIN_USER.Visit
+        SET VisitStatus = p_status
+        WHERE VisitID = p_visit_id;
+        
+        DBMS_OUTPUT.PUT_LINE('Visit status updated successfully for ' || p_visit_id);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error in Update_Visit_Status: ' || SQLERRM);
+            RAISE;
+    END Update_Visit_Status;
+    
+    PROCEDURE Complete_Payment(p_bill_id IN VARCHAR2) IS
+    BEGIN
+        UPDATE ADMIN_USER.Billing
+        SET PaymentStatus = 'Paid'
+        WHERE BillID = p_bill_id;
+        
+        DBMS_OUTPUT.PUT_LINE('Payment completed for Bill ' || p_bill_id);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error in Complete_Payment: ' || SQLERRM);
+            RAISE;
+    END Complete_Payment;
+    
+    PROCEDURE Record_Treatment(p_visit_id IN VARCHAR2, p_description IN VARCHAR2) IS
+        v_treatment_id VARCHAR2(50) := RAWTOHEX(SYS_GUID());  -- it will generate unique ID
+    BEGIN
+        INSERT INTO ADMIN_USER.TreatmentHistory (TreatmentID, VisitID, Description, TreatmentDate)
+        VALUES (v_treatment_id, p_visit_id, p_description, SYSDATE);
+        
+        DBMS_OUTPUT.PUT_LINE('Treatment recorded successfully for Visit ' || p_visit_id ||
+                             '. Treatment ID: ' || v_treatment_id);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Error in Record_Treatment: ' || SQLERRM);
+            RAISE;
+    END Record_Treatment;
+    
+END healthcare_pkg;
 /
 

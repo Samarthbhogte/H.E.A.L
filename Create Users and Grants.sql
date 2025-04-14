@@ -50,3 +50,65 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error creating BILL_USER: ' || SQLERRM);
 END;
 /
+-------------------------------------------------------------
+-- SECTION 3: Grant Basic Database Access (CONNECT, RESOURCE)
+-------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO ADMIN_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted CONNECT, RESOURCE to ADMIN_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting CONNECT, RESOURCE to ADMIN_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted CONNECT, RESOURCE to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting CONNECT, RESOURCE to DOC_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted CONNECT, RESOURCE to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting CONNECT, RESOURCE to BILL_USER: ' || SQLERRM);
+END;
+/
+
+-------------------------------------------------------------
+-- SECTION 4: Grant Administrative Privileges to ADMIN_USER
+-------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CREATE SESSION, CREATE TABLE, CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE, CREATE TRIGGER TO ADMIN_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted DDL privileges to ADMIN_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting DDL privileges to ADMIN_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CREATE USER, ALTER USER, DROP USER TO ADMIN_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted user management privileges to ADMIN_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting user management privileges to ADMIN_USER: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT CREATE ROLE, GRANT ANY ROLE TO ADMIN_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted role management privileges to ADMIN_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting role management privileges to ADMIN_USER: ' || SQLERRM);
+END;
+/
+
+ALTER USER admin_user QUOTA UNLIMITED ON DATA;
+GRANT CREATE PUBLIC SYNONYM TO ADMIN_USER;

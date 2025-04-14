@@ -507,3 +507,84 @@ SELECT *
 FROM ADMIN_USER.Doctor_Only_Patient_Summary;
 -- Expected: Should NOT be accessible to BILL_USER; it should return "Access Denied" or no data.
 
+
+
+
+
+
+------------------------------------------------------------
+-- PROCEDURES to be runned in ADMIN_ USER
+------------------------------------------------------------
+-- Procedure: Update_Visit_Status
+CREATE OR REPLACE PROCEDURE Update_Visit_Status (
+    p_visit_id IN VARCHAR2,
+    p_status   IN VARCHAR2
+) AS
+BEGIN
+    -- Validate the status value
+    IF p_status NOT IN ('Pending', 'Completed', 'Canceled') THEN
+        RAISE_APPLICATION_ERROR(-20003, 'Invalid visit status. Must be Pending, Completed, or Canceled.');
+    END IF;
+    
+    -- Update Visit table
+    UPDATE Visit
+    SET VisitStatus = p_status
+    WHERE VisitID = p_visit_id;
+    
+    -- Optionally: COMMIT; -- uncomment if automatic commit is desired
+    
+    DBMS_OUTPUT.PUT_LINE('Visit status updated successfully for ' || p_visit_id);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error in Update_Visit_Status: ' || SQLERRM);
+        RAISE;
+END;
+/
+  
+-- Procedure: Complete_Payment
+CREATE OR REPLACE PROCEDURE Complete_Payment (
+    p_bill_id IN VARCHAR2
+) AS
+BEGIN
+    -- Update Billing table to mark payment as complete
+    UPDATE Billing
+    SET PaymentStatus = 'Paid'
+    WHERE BillID = p_bill_id;
+    
+    -- Optionally: COMMIT; -- uncomment if automatic commit is desired
+    
+    DBMS_OUTPUT.PUT_LINE('Payment completed for Bill ' || p_bill_id);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error in Complete_Payment: ' || SQLERRM);
+        RAISE;
+END;
+/
+
+
+-- Procedure: Record_Treatment
+CREATE OR REPLACE PROCEDURE Record_Treatment (
+    p_visit_id    IN VARCHAR2,
+    p_description IN VARCHAR2
+) AS
+    -- Generate a unique TreatmentID using SYS_GUID (converted to hexadecimal)
+    v_treatment_id VARCHAR2(50) := RAWTOHEX(SYS_GUID());
+BEGIN
+    INSERT INTO ADMIN_USER.TreatmentHistory (TreatmentID, VisitID, Description, TreatmentDate)
+    VALUES (v_treatment_id, p_visit_id, p_description, SYSDATE);
+    
+    DBMS_OUTPUT.PUT_LINE('Treatment recorded successfully for Visit ' || p_visit_id ||
+                         '. Treatment ID: ' || v_treatment_id);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error in Record_Treatment: ' || SQLERRM);
+        RAISE;
+END;
+/
+
+
+BEGIN
+    Record_Treatment('V001', 'Administered flu vaccine');
+END;
+/
+

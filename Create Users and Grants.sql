@@ -181,3 +181,82 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error granting privileges on Billing to BILL_USER: ' || SQLERRM);
 END;
 /
+
+-------------------------------------------------------------
+-- SECTION 7: Prevent Unassigned Privileges (Revoke DROP ANY TABLE if granted)
+-------------------------------------------------------------
+DECLARE
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count FROM DBA_SYS_PRIVS 
+    WHERE GRANTEE = 'DOC_USER' AND PRIVILEGE = 'DROP ANY TABLE';
+    IF v_count > 0 THEN
+        EXECUTE IMMEDIATE 'REVOKE DROP ANY TABLE FROM DOC_USER';
+        DBMS_OUTPUT.PUT_LINE('Revoked DROP ANY TABLE from DOC_USER');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No DROP ANY TABLE privilege found for DOC_USER');
+    END IF;
+    
+    SELECT COUNT(*) INTO v_count FROM DBA_SYS_PRIVS 
+    WHERE GRANTEE = 'BILL_USER' AND PRIVILEGE = 'DROP ANY TABLE';
+    IF v_count > 0 THEN
+        EXECUTE IMMEDIATE 'REVOKE DROP ANY TABLE FROM BILL_USER';
+        DBMS_OUTPUT.PUT_LINE('Revoked DROP ANY TABLE from BILL_USER');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('No DROP ANY TABLE privilege found for BILL_USER');
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error in revoking privileges: ' || SQLERRM);
+END;
+/
+
+-------------------------------------------------------------
+-- SECTION 8: Create Public Synonyms (Accessible by all users)
+-------------------------------------------------------------
+-- These commands must be executed while connected as ADMIN_USER
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE PUBLIC SYNONYM Patient FOR ADMIN_USER.Patient';
+    DBMS_OUTPUT.PUT_LINE('Created public synonym: Patient');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Patient: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE PUBLIC SYNONYM Doctor FOR ADMIN_USER.Doctor';
+    DBMS_OUTPUT.PUT_LINE('Created public synonym: Doctor');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Doctor: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE PUBLIC SYNONYM Appointment FOR ADMIN_USER.Appointment';
+    DBMS_OUTPUT.PUT_LINE('Created public synonym: Appointment');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Appointment: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE PUBLIC SYNONYM MedicalRecord FOR ADMIN_USER.MedicalRecord';
+    DBMS_OUTPUT.PUT_LINE('Created public synonym: MedicalRecord');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for MedicalRecord: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    EXECUTE IMMEDIATE 'CREATE PUBLIC SYNONYM Billing FOR ADMIN_USER.Billing';
+    DBMS_OUTPUT.PUT_LINE('Created public synonym: Billing');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Billing: ' || SQLERRM);
+END;
+/
+

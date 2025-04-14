@@ -32,7 +32,11 @@ CREATE INDEX ADMIN_USER.idx_patient_email_phone
 CREATE INDEX ADMIN_USER.idx_medicalrecord_patient
   ON ADMIN_USER.MedicalRecord(PatientID);
 
-  ----------------------------------------------------------
+
+
+
+
+----------------------------------------------------------
 --    TRIGGERS
 ----------------------------------------------------------
 -- This trigger checks, before any INSERT or UPDATE on the Appointment table, whether the new AppointmentDate is earlier than today (using TRUNC(SYSDATE) to ignore the time component)
@@ -73,6 +77,13 @@ BEGIN
     END IF;
 END;
 /
+
+
+
+
+
+
+
 
 ------------------------------------------------------------
 -- [VIEW CREATION SECTION] - Run as ADMIN_USER
@@ -191,3 +202,103 @@ END;
 /
 
 
+------------------------------------------------------------------------
+-- 3) CREATE OR REPLACE VIEW: Billing_Insights
+--    Allowed: ADMIN_USER only
+--    Everyone else gets "Access Denied."
+------------------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE '
+        CREATE OR REPLACE VIEW ADMIN_USER.Billing_Insights AS
+        SELECT
+            TO_CHAR(B.BillID)       AS BillID,
+            P.FirstName || '' '' || P.LastName AS PatientName,
+            TO_CHAR(V.VisitDate, ''YYYY-MM-DD'') AS VisitDate,
+            TO_CHAR(B.TotalAmount)  AS TotalAmount,
+            B.PaymentStatus
+        FROM ADMIN_USER.Billing B
+             JOIN ADMIN_USER.Visit V    ON B.VisitID = V.VisitID
+             JOIN ADMIN_USER.Patient P  ON B.PatientID = P.PatientID
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) = ''ADMIN_USER''
+
+        UNION ALL
+
+        SELECT
+            ''Access Denied'' AS BillID,
+            ''Access Denied'' AS PatientName,
+            ''Access Denied'' AS VisitDate,
+            ''Access Denied'' AS TotalAmount,
+            ''Access Denied'' AS PaymentStatus
+        FROM DUAL
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) <> ''ADMIN_USER''
+    ';
+    DBMS_OUTPUT.PUT_LINE('View ADMIN_USER.Billing_Insights created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating ADMIN_USER.Billing_Insights: ' || SQLERRM);
+END;
+/
+-- Grant SELECT on Billing_Insights to BILL_USER (so non-admin users see "Access Denied")
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Billing_Insights TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Billing_Insights to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Billing_Insights to BILL_USER: ' || SQLERRM);
+END;
+/
+
+------------------------------------------------------------------------
+-- 4) CREATE OR REPLACE VIEW: Doctor_Only_Patient_Summary
+--    Allowed: DOC_USER only (and optionally ADMIN_USER)
+------------------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE '
+        CREATE OR REPLACE VIEW ADMIN_USER.Doctor_Only_Patient_Summary AS
+        SELECT 
+            TO_CHAR(V.VisitID) AS VisitID,
+            P.FirstName || '' '' || P.LastName AS PatientName,
+            TO_CHAR(V.VisitDate, ''YYYY-MM-DD'') AS VisitDate,
+            V.VisitReason,
+            V.VisitStatus
+        FROM ADMIN_USER.Visit V
+             JOIN ADMIN_USER.Patient P ON V.PatientID = P.PatientID
+             JOIN ADMIN_USER.Doctor D ON V.DoctorID = D.DoctorID
+             JOIN ADMIN_USER.Users U ON D.UserID = U.UserID
+        WHERE UPPER(U.Username) = UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER''))
+          AND UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) IN (''DOC_USER'', ''ADMIN_USER'')
+
+        UNION ALL
+
+        SELECT
+            ''Access Denied'' AS VisitID,
+            ''Access Denied'' AS PatientName,
+            ''Access Denied'' AS VisitDate,
+            ''Access Denied'' AS VisitReason,
+            ''Access Denied'' AS VisitStatus
+        FROM DUAL
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) NOT IN (''DOC_USER'', ''ADMIN_USER'')
+    ';
+    DBMS_OUTPUT.PUT_LINE('View ADMIN_USER.Doctor_Only_Patient_Summary created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating ADMIN_USER.Doctor_Only_Patient_Summary: ' || SQLERRM);
+END;
+/
+-- Grant SELECT on Doctor_Only_Patient_Summary to DOC_USER and to BILL_USER (so they can see "Access Denied")
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Doctor_Only_Patient_Summary TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Doctor_Only_Patient_Summary to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Doctor_Only_Patient_Summary to DOC_USER: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Doctor_Only_Patient_Summary TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Doctor_Only_Patient_Summary to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Doctor_Only_Patient_Summary to BILL_USER: ' || SQLERRM);
+END;
+/

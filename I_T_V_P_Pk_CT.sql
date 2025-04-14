@@ -445,3 +445,65 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error creating public synonym for Billing_Only_View: ' || SQLERRM);
 END;
 /
+
+
+
+
+
+------------------------------------------------------------
+-- [TEST CASES  FOR THE VIEWS SECTION]
+------------------------------------------------------------
+
+
+--Test Queries for ADMIN_USER
+------------------------------------------------------------
+
+SELECT * 
+FROM ADMIN_USER.Doctor_Availability;
+-- Expected: Returns full doctor details.
+
+
+SELECT * 
+FROM ADMIN_USER.Patient_Visit_Summary;
+-- Expected: Returns all patient visit records with valid details.
+
+
+SELECT * 
+FROM ADMIN_USER.Billing_Insights;
+-- Expected: Returns all billing records.
+
+
+--Test Queries for DOC_USER
+------------------------------------------------------------
+SELECT * 
+FROM ADMIN_USER.Doctor_Availability;
+-- Expected: Returns full doctor details.
+
+
+SELECT * 
+FROM ADMIN_USER.Doctor_Only_Patient_Summary;
+-- Expected: Returns visit records associated with DOC_USER (or "Access Denied" if DOC_USER is not matched).
+
+
+SELECT * 
+FROM ADMIN_USER.Patient_Visit_Summary;
+-- Expected: Depending on your view logic, this could return "Access Denied" or no rows if Patient_Visit_Summary is not allowed for DOC_USER.
+
+
+
+--Test Queries for BILL_USER
+--------------------------------------------------------
+SELECT * 
+FROM ADMIN_USER.Billing_Only_View;
+-- Expected: Returns billing-specific records for BILL_USER.
+
+
+SELECT * 
+FROM ADMIN_USER.Billing_Insights;
+-- Expected: Should NOT be accessible to BILL_USER; ideally, it should return "Access Denied" or raise an error.
+
+
+SELECT * 
+FROM ADMIN_USER.Doctor_Only_Patient_Summary;
+-- Expected: Should NOT be accessible to BILL_USER; it should return "Access Denied" or no data.
+

@@ -346,3 +346,47 @@ EXCEPTION
         DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Billing_Only_View to BILL_USER: ' || SQLERRM);
 END;
 /
+
+------------------------------------------------------------
+-- [UNDERLYING TABLE PRIVILEGES SECTION]
+------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Billing TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Billing to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Billing to DOC_USER: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Visit TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Visit to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Visit to DOC_USER: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Users TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Users to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Users to DOC_USER: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.MedicalRecord TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on MedicalRecord to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on MedicalRecord to BILL_USER: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Visit TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Visit to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Visit to BILL_USER: ' || SQLERRM);
+END;
+/

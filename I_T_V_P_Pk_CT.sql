@@ -74,5 +74,120 @@ BEGIN
 END;
 /
 
+------------------------------------------------------------
+-- [VIEW CREATION SECTION] - Run as ADMIN_USER
+------------------------------------------------------------
+
+
+SET SERVEROUTPUT ON;
+
+
+------------------------------------------------------------------------
+-- 1) CREATE OR REPLACE VIEW: Doctor_Availability
+--    Allowed: ADMIN_USER, DOC_USER, BILL_USER
+--    Others get "Access Denied."
+------------------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE '
+        CREATE OR REPLACE VIEW ADMIN_USER.Doctor_Availability AS
+        SELECT 
+            DoctorID,
+            FirstName,
+            LastName,
+            Specialization,
+            Availability
+        FROM ADMIN_USER.Doctor
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) 
+              IN (''ADMIN_USER'', ''DOC_USER'', ''BILL_USER'')
+
+        UNION ALL
+
+        SELECT 
+            ''Access Denied'' AS DoctorID,
+            ''Access Denied'' AS FirstName,
+            ''Access Denied'' AS LastName,
+            ''Access Denied'' AS Specialization,
+            ''Access Denied'' AS Availability
+        FROM DUAL
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) 
+              NOT IN (''ADMIN_USER'', ''DOC_USER'', ''BILL_USER'')
+    ';
+    DBMS_OUTPUT.PUT_LINE('View ADMIN_USER.Doctor_Availability created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating ADMIN_USER.Doctor_Availability: ' || SQLERRM);
+END;
+/
+
+-- Grant SELECT on Doctor_Availability to DOC_USER and BILL_USER
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Doctor_Availability TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Doctor_Availability to DOC_USER');
+
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Doctor_Availability TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Doctor_Availability to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Doctor_Availability: ' || SQLERRM);
+END;
+/
+
+------------------------------------------------------------------------
+-- 2) CREATE OR REPLACE VIEW: Patient_Visit_Summary
+--    Allowed: ADMIN_USER, BILL_USER
+--    Others get "Access Denied."
+------------------------------------------------------------------------
+BEGIN
+    EXECUTE IMMEDIATE '
+        CREATE OR REPLACE VIEW ADMIN_USER.Patient_Visit_Summary AS
+        SELECT 
+            TO_CHAR(V.VisitID) AS VisitID,
+            P.FirstName || '' '' || P.LastName AS PatientName,
+            D.FirstName || '' '' || D.LastName AS DoctorName,
+            TO_CHAR(V.VisitDate, ''YYYY-MM-DD'') AS VisitDate,
+            V.VisitReason,
+            V.VisitStatus
+        FROM ADMIN_USER.Visit V
+             JOIN ADMIN_USER.Patient P ON V.PatientID = P.PatientID
+             JOIN ADMIN_USER.Doctor D ON V.DoctorID = D.DoctorID
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) 
+              IN (''ADMIN_USER'', ''BILL_USER'')
+
+        UNION ALL
+
+        SELECT
+            ''Access Denied'' AS VisitID,
+            ''Access Denied'' AS PatientName,
+            ''Access Denied'' AS DoctorName,
+            ''Access Denied'' AS VisitDate,
+            ''Access Denied'' AS VisitReason,
+            ''Access Denied'' AS VisitStatus
+        FROM DUAL
+        WHERE UPPER(SYS_CONTEXT(''USERENV'', ''SESSION_USER'')) 
+              NOT IN (''ADMIN_USER'', ''BILL_USER'')
+    ';
+    DBMS_OUTPUT.PUT_LINE('View ADMIN_USER.Patient_Visit_Summary created.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error creating ADMIN_USER.Patient_Visit_Summary: ' || SQLERRM);
+END;
+/
+-- Grant SELECT on Patient_Visit_Summary to both BILL_USER and DOC_USER
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Patient_Visit_Summary TO BILL_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Patient_Visit_Summary to BILL_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Patient_Visit_Summary to BILL_USER: ' || SQLERRM);
+END;
+/
+BEGIN
+    EXECUTE IMMEDIATE 'GRANT SELECT ON ADMIN_USER.Patient_Visit_Summary TO DOC_USER';
+    DBMS_OUTPUT.PUT_LINE('Granted SELECT on Patient_Visit_Summary to DOC_USER');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Error granting SELECT on Patient_Visit_Summary to DOC_USER: ' || SQLERRM);
+END;
+/
 
 

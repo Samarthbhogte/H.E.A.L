@@ -661,3 +661,44 @@ CREATE OR REPLACE PACKAGE BODY ADMIN_USER.healthcare_pkg IS
 END healthcare_pkg;
 /
 
+
+
+
+
+
+
+
+---------------------------------------------------------------
+-- Test Package Queries for healthcare_pkg
+---------------------------------------------------------------
+
+-- Test Case: Update Visit Status with a valid status.
+BEGIN
+    -- Calling the procedure with a valid status.
+    ADMIN_USER.healthcare_pkg.Update_Visit_Status('V001', 'Completed');
+END;
+/
+-- After running, verify the update:
+SELECT VisitID, VisitStatus FROM ADMIN_USER.Visit WHERE VisitID = 'V001';
+
+---------------------------------------------------------------
+
+-- Test Case: Update Visit Status with an invalid status.
+-- This will trigger the validation and raise an error, which is then caught.
+BEGIN
+    -- Calling the procedure with an invalid status (e.g., 'InvalidStatus').
+    ADMIN_USER.healthcare_pkg.Update_Visit_Status('V001', 'InvalidStatus');
+EXCEPTION
+    WHEN OTHERS THEN
+        -- The error message should indicate that the status is invalid.
+        DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLERRM);
+END;
+/
+-- Optionally, re-run to confirm the behavior:
+BEGIN
+    ADMIN_USER.healthcare_pkg.Update_Visit_Status('V001', 'InvalidStatus');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLERRM);
+END;
+/

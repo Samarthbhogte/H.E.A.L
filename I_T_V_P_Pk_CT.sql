@@ -661,3 +661,188 @@ CREATE OR REPLACE PACKAGE BODY ADMIN_USER.healthcare_pkg IS
 END healthcare_pkg;
 /
 
+
+
+
+
+
+
+
+---------------------------------------------------------------
+-- Test Package Queries for healthcare_pkg
+---------------------------------------------------------------
+
+-- Test Case: Update Visit Status with a valid status.
+BEGIN
+    -- Calling the procedure with a valid status.
+    ADMIN_USER.healthcare_pkg.Update_Visit_Status('V001', 'Completed');
+END;
+/
+-- After running, verify the update:
+SELECT VisitID, VisitStatus FROM ADMIN_USER.Visit WHERE VisitID = 'V001';
+
+---------------------------------------------------------------
+
+-- Test Case: Update Visit Status with an invalid status.
+-- This will trigger the validation and raise an error, which is then caught.
+BEGIN
+    -- Calling the procedure with an invalid status (e.g., 'InvalidStatus').
+    ADMIN_USER.healthcare_pkg.Update_Visit_Status('V001', 'InvalidStatus');
+EXCEPTION
+    WHEN OTHERS THEN
+        -- The error message should indicate that the status is invalid.
+        DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLERRM);
+END;
+/
+-- Optionally, re-run to confirm the behavior:
+BEGIN
+    ADMIN_USER.healthcare_pkg.Update_Visit_Status('V001', 'InvalidStatus');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Expected error: ' || SQLERRM);
+END;
+/
+
+
+---------------------------------------------------------------
+
+-- Test Case: Complete Payment.
+-- This will update the Billing record with BillID 'B001' to 'Paid'.
+BEGIN
+    -- Calling the procedure with a valid BillID.
+    ADMIN_USER.healthcare_pkg.Complete_Payment('B001');
+END;
+/
+-- Verify the result:
+SELECT BillID, PaymentStatus FROM ADMIN_USER.Billing WHERE BillID = 'B001';
+
+---------------------------------------------------------------
+
+-- Test Case: Record Treatment.
+-- This will insert a new treatment record into the TreatmentHistory table
+-- for the Visit with VisitID 'V001' with the given treatment description.
+BEGIN
+    -- Calling the procedure with a valid VisitID and treatment description.
+    ADMIN_USER.healthcare_pkg.Record_Treatment('V001', 'Administered flu vaccine');
+END;
+/
+-- Verify the treatment record:
+SELECT * FROM ADMIN_USER.TreatmentHistory WHERE VisitID = 'V001';
+
+
+
+
+
+
+------------------------------------------------------------------
+-- Constraint Testing
+------------------------------------------------------------------
+-- These test cases check data integrity constraints on the underlying tables.
+-- They should be executed while connected as ADMIN_USER.
+------------------------------------------------------------------
+
+-- Test Case 1: Insert duplicate email in Patient (should fail)
+BEGIN
+    INSERT INTO ADMIN_USER.Patient (PatientID, UserID, FirstName, LastName, DOB, Gender, Email, PhoneNumber, EmergencyContact, CreatedAt)
+    VALUES ('P999', 'U001', 'Test', 'Duplicate', SYSDATE, 'Male', 'alice@example.com', '1231231234', 'Test Contact', SYSDATE);
+    DBMS_OUTPUT.PUT_LINE('Constraint Test Failed: Duplicate email inserted.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Constraint Test Passed: Duplicate email not allowed – ' || SQLERRM);
+END;
+/
+
+-- Test Case 2: Appointment in the past (should fail business logic)
+BEGIN
+    INSERT INTO ADMIN_USER.Appointment (AppointmentID, DoctorID, AppointmentDate, AppointmentStatus)
+    VALUES ('A999', 'D001', TO_DATE('2023-01-01','YYYY-MM-DD'), 'Scheduled');
+    DBMS_OUTPUT.PUT_LINE('Constraint Test Failed: Past appointment inserted.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Constraint Test Passed: Past appointment insertion blocked – ' || SQLERRM);
+END;
+/
+
+
+-- Test Case 3: (Run as ADMIN_USER) Insert a Patient with an invalid Gender 
+-- (will fail because Gender must be 'Male', 'Female', or 'Other')
+
+BEGIN
+    INSERT INTO ADMIN_USER.Patient 
+       (PatientID, UserID, FirstName, LastName, DOB, Gender, Email, PhoneNumber, EmergencyContact, CreatedAt)
+    VALUES 
+       ('P888', 'U888', 'Invalid', 'Gender', TO_DATE('1990-01-01','YYYY-MM-DD'), 'Unknown', 'test_unknown@example.com', '0000000000', 'N/A', SYSDATE);
+    DBMS_OUTPUT.PUT_LINE('Constraint Test Failed: Patient inserted with invalid gender.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Constraint Test Passed: Patient with invalid gender not allowed – ' || SQLERRM);
+END;
+/
+
+
+-- Test Case 4: (Run as DOC_USER) Doctor tries to update Billing (should fail)
+
+BEGIN
+    UPDATE ADMIN_USER.Billing 
+    SET TotalAmount = 999.99 
+    WHERE BillID = 'B001';
+    DBMS_OUTPUT.PUT_LINE('Test Case Failed: Doctor updated Billing.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Test Case Passed: Doctor cannot update Billing – ' || SQLERRM);
+END;
+/
+ 
+ 
+
+-- Test Case 5: (Run as DOC_USER) Doctor tries to insert a Visit (should fail)
+
+BEGIN
+    INSERT INTO ADMIN_USER.Visit (VisitID, PatientID, DoctorID, VisitDate, VisitReason, VisitStatus)
+    VALUES ('V999', 'P001', 'D001', SYSDATE, 'Unauthorized Visit', 'Pending');
+    DBMS_OUTPUT.PUT_LINE('Test Case Failed: Doctor inserted Visit.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Test Case Passed: Unauthorized Visit insert blocked – ' || SQLERRM);
+END;
+/
+ 
+
+-- Test Case 6: (Run as DOC_USER) Doctor tries to delete a user (should fail)
+
+BEGIN
+    DELETE FROM ADMIN_USER.Users 
+    WHERE Username = 'admin_user';
+    DBMS_OUTPUT.PUT_LINE('Test Case Failed: Doctor deleted a user.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Test Case Passed: Doctor cannot delete a user – ' || SQLERRM);
+END;
+/
+ 
+
+-- Test Case 7: (Run as BILL_USER) Billing staff tries to update a MedicalRecord (should fail)
+
+BEGIN
+    UPDATE ADMIN_USER.MedicalRecord 
+    SET ChronicConditions = 'Test Condition'
+    WHERE RecordID = 'MR001';
+    DBMS_OUTPUT.PUT_LINE('Test Case Failed: Billing staff updated MedicalRecord.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Test Case Passed: Billing staff cannot update MedicalRecord – ' || SQLERRM);
+END;
+/
+ 
+
+-- Test Case 8: (Run as BILL_USER) Billing staff tries to delete a Visit (should fail)
+
+BEGIN
+    DELETE FROM ADMIN_USER.Visit
+    WHERE VisitID = 'V001';
+    DBMS_OUTPUT.PUT_LINE('Test Case Failed: Billing staff deleted a Visit record.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Test Case Passed: Billing staff cannot delete a Visit record – ' || SQLERRM);
+END;
+/

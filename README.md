@@ -7,7 +7,7 @@ HEAL is a role-based healthcare database project designed using Oracle SQL. It s
 ## Project Metadata
 
 - **Project Name:** HEAL (Healthcare Entity Access & Logic)
-- **Author:** [Your Name]
+
 - **Created On:** April 16, 2025
 - **Platform:** Oracle Database 21c (via SQL Developer on macOS ARM)
 - **Schema Owner:** `ADMIN_USER`
